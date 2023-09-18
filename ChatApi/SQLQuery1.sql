@@ -37,7 +37,7 @@ as
 begin
 	insert into Users(name,password) values (@Name, HASHBYTES('SHA1',@Password))
 end
-
+go
 /*Buscar usuario*/
 create proc sp_search_user(
 @Name varchar(255),
@@ -47,7 +47,7 @@ as
 begin 
 	select idUser, name from Users Where name = @Name AND password = HASHBYTES('SHA1',@PASSWORD)
 end
-
+go
 /*Crear servidor*/
 create proc sp_crete_server(
 @Name text
@@ -56,14 +56,14 @@ as
 begin
 	insert into Users(name) values (@Name)
 end
-
+go
 /*Listar Servidor*/
 create proc sp_list_server
 as
 begin 
 	select name, photo from Server
 end
-
+go
 /*lISTAR CHAT*/
 create proc sp_list_chat(
 @IdServer INT 
@@ -72,7 +72,7 @@ as
 begin
 	select Users.name, Chat.chat,Server.name from  ((Chat inner join Users on Chat.idUser = Users.idUser)inner join Server on @IdServer  = Server.idServer )  
 end
-
+go
 /*CREART CHAT*/
 CREATE PROC sp_create_chat(
 @Chat text,
@@ -84,13 +84,13 @@ begin
 	insert into Chat(chat,idUser,idServer) VALUES(@Chat,@IdUser,@IdServer)
 END
 
-EXEC sp_create_user @Name='juan@gmail.com', @Password = '123'
+/*EXEC sp_create_user @Name='juan@gmail.com', @Password = '123'
 
 EXEC sp_search_user @Name='juan@gmail.com', @Password = '123'
 
 
 
-/*insert into Server(name,photo) values ('react','test.png')
+insert into Server(name,photo) values ('react','test.png')
 insert into Chat(chat,idUser,idServer) values ('Esto es una prueba ',1,1)
 
 EXEC sp_list_chat @IdServer = 1
