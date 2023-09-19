@@ -1,23 +1,35 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ChatApi.Models;
-
+using ChatApi.Data;
 namespace ChatApi.Controllers
 {
     [Route("controller")]
     [ApiController]
     public class UsersController : Controller
     {
-        public readonly DbChatContext _chatContext;
-        public UsersController(DbChatContext _context) {
-            _chatContext = _context;    
+        private readonly string cadena;
+        public UsersController(IConfiguration config)
+        {
+
+          cadena =  config.GetConnectionString("cadenaConexion");
         }
+
         [Route("create/")]
         [HttpPost]
-        public IActionResult Create(User ouser)
+        public IActionResult Create(UserModel ouser)
         {
+            UserData userData = new UserData(cadena);
+            
             try
             {
-                return StatusCode(StatusCodes.Status201Created, new { menssage = "oh", reponse = "exito" });
+                bool users;
+
+                users = userData.creteUser(ouser);
+                if (users == false)
+                {
+                    return StatusCode(StatusCodes.Status404NotFound, new { message = "error", response = "Hubo un error al momento de crear el usuario" });
+                }
+                return StatusCode(StatusCodes.Status200OK, new { message = "ok", response = "Usuario creado" });
             }
             catch (Exception ex)
             {
@@ -27,11 +39,19 @@ namespace ChatApi.Controllers
 
         [Route("login/")]
         [HttpPost]
-        public IActionResult Login(User ouser)
+        public IActionResult Login(UserModel ouser)
         {
+            UserData userData = new UserData(cadena); 
             try
             {
-                return StatusCode(StatusCodes.Status200OK, new { message = "ok", response = "exito" });
+
+                List<UserModel> users = new List<UserModel>();
+                users = userData.login(ouser);
+                if (users.Count == 0)
+                {
+                    return StatusCode(StatusCodes.Status404NotFound, new { message = "error", response = "Usuario o contraseña son incorrectos" });
+                }
+                return StatusCode(StatusCodes.Status200OK, new { message = "ok", response = users });
             }
             catch (Exception ex)
             {
