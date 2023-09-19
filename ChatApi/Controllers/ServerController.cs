@@ -2,11 +2,27 @@
 
 namespace ChatApi.Controllers
 {
+    [Route("controller")]
+    [ApiController]
     public class ServerController : Controller
     {
-        public IActionResult Index()
+        private readonly string cadena;
+        public ServerController(IConfiguration config)
         {
-            return View();
+            cadena = config.GetConnectionString("cadenaConexion");
+        }
+
+        [Route("list")]
+        [HttpGet]
+        public IActionResult ListServer()
+        {
+            try
+            {
+                return View();
+            }catch(Exception ex)
+            {
+                return View();
+            }
         }
     }
 }
